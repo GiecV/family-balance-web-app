@@ -1,7 +1,7 @@
-#Board
+# Board
 This is the final project for the Web Programming course. The client-side code uses Vue.js and Bootstrap, the server-side code uses Node.js and Express.
 
-##The application
+## The application
 Board is a web app created to manage the expenses of a family or group of friends.
 A user can:
 - sign up/log in/log out
