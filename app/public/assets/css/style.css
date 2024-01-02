@@ -1,0 +1,54 @@
+.dropdown-toggle {
+  margin-left: 10px;
+}
+
+.navbar-brand img {
+  max-width: 2.5vw;
+  display: block;
+  width: 100%;
+}
+
+.input-group-btn {
+  width: 10px;
+}
+
+.img-responsive {
+  max-width: 200px;
+  max-height: 300px;
+}
+
+.brand {
+  height: 120px;
+}
+
+.card {
+  margin: 10px;
+}
+
+.btn-filter {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.input-month {
+  margin-left: 5px;
+}
+
+.redText {
+  color: red;
+  font-weight: bold;
+}
+.greenText {
+  color: green;
+  font-weight: bold;
+}
+
+.btn-addExpense {
+    margin-left: 100px;
+}
+
+table 
+{
+    table-layout:fixed;
+    width:100%;
+}

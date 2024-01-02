@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    >
+
+    <link rel="icon" href="images/logo.png" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    >
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css" >
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    >
+    <!-- Vue.js CDN -->
+    <script src="assets/js/app.js" defer></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Board</title>
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand img-responsive" href="dashboard.html">
+          <img src="images/logo.png" alt="logo" >
+        </a>
+        <a class="navbar-brand" href=""></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item profileNavbarLabel">
+              <!-- active -->
+              <a
+                class="nav-link profileNavbarLabel"
+                href="#"
+                id="profileNavbarLabel"
+                @click="switchNavbar($event)"
+                ><i
+                  class="fa fa-user profileNavbarLabel"
+                  aria-hidden="true"
+                ></i>
+                Profile
+                <span class="sr-only profileNavbarLabel" v-if="showProfile"
+                  >(current)</span
+                ></a
+              >
+            </li>
+            <li class="nav-item paymentsNavbarLabel">
+              <a
+                class="nav-link paymentsNavbarLabel"
+                href="#"
+                id="paymentsNavbarLabel"
+                @click="switchNavbar($event)"
+                ><i
+                  class="fa fa-money-bill paymentsNavbarLabel"
+                  aria-hidden="true"
+                ></i>
+                Payments<span class="sr-only" v-if="showPayments"
+                  >(current)</span
+                ></a
+              >
+            </li>
+            <li class="nav-item budgetNavbarLabel">
+              <a
+                class="nav-link budgetNavbarLabel"
+                href="#"
+                id="budgetNavbarLabel"
+                @click="switchNavbar($event)"
+                ><i
+                  class="fa fa-area-chart budgetNavbarLabel"
+                  aria-hidden="true"
+                ></i>
+                Balance<span class="sr-only" v-if="showBalance"
+                  >(current)</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showProfile"
+      >
+        <form class="card p-3 bg-light">
+          <h2 class="flex-nowrap">Hi, {{firstName}} {{lastName}}</h2>
+          <div class="mb-3">
+            <div class="input-group flex-nowrap">
+              <span class="input-group-text" id="addon-wrapping">@</span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Username"
+                aria-label="Username"
+                aria-describedby="addon-wrapping"
+                ref="username"
+                v-model="username"
+                disabled
+              >
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input
+              v-bind:type="[showPassword ? 'text' : 'password']"
+              class="form-control"
+              placeholder="Password"
+              id="password"
+              ref="password"
+              v-model="password"
+              disabled
+            >
+            <div class="input-group-append">
+              <span
+                class="input-group-text"
+                @click="showPassword = !showPassword"
+              >
+                <i
+                  class="fa"
+                  :class="[showPassword ? 'fa-eye' : 'fa-eye-slash']"
+                  aria-hidden="true"
+                ></i>
+              </span>
+            </div>
+          </div>
+          <button class="btn btn-danger" @click="logOut"><i class="fa fa-sign-out"></i></button>  
+        </form>
+      </div>
+
+      <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showPayments"
+      >
+        <div class="card p-3 bg-light table-responsive" id="textExample">
+          <table class="table-bordered w-auto">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Buyer</th>
+                <th>Cost</th>
+                <th>Users</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <!--<tr v-for="expense in expenses">-->
+            <tr v-for="expense in expensesWithShortDate" :key="expense.id"> 
+              <td>{{expense.id}}</td>
+              <td>{{expense.date}}</td>
+              <td>{{expense.description}}</td>
+              <td>{{expense.category}}</td>
+              <td>{{expense.buyer}}</td>
+              <td>{{expense.cost}}</td>
+              <td>
+                <span v-for="user in expense.users"
+                  >{{user.username}}&nbsp</span
+                >
+              </td>
+              <td>
+                <button
+                  class="btn btn-warning"
+                  @click="showEditWindow(expense.id, expense.date)"
+                >
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  class="btn btn-danger btn-filter"
+                  @click="deleteExpense(expense.id, expense.date)"
+                >
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          </table>
+
+          <form class="p-3 bg-light form-inline">
+            <div class="form-group mb-2">
+              <input
+                type="text"
+                id="year"
+                name="dateStandard"
+                placeholder="Year"
+                ref="year"
+              />
+              <select
+                class="form-select input-month"
+                id="month"
+                aria-label="Month select"
+                ref="month"
+              >
+                <option selected>Month</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+              <button
+                type="button"
+                class="btn btn-primary btn-filter"
+                @click="filter"
+              >
+                <i class="fa fa-filter" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="form-group mx-sm-3 mb-2">
+              <input
+                type="text"
+                id="searchInput"
+                name="search"
+                placeholder="Search"
+                ref="searchInput"
+              />
+              <button
+                type="button"
+                class="btn btn-primary btn-search btn-filter"
+                @click="search"
+              >
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+              <div class="col">
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  v-if="filteredResults"
+                  @click="getExpenses"
+                >
+                  <i class="fa fa-filter-circle-xmark" aria-hidden="true"></i>
+                </button>
+
+                <button
+                type="button"
+                class="btn btn-success btn-addExpense"
+                @click="showNewExpenseCard = true; showPayments = false;"
+              >
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </button>
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showEditCard"
+      >
+        <div class="card p-3 bg-light">
+          <form class="card p-3 bg-light">
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Id"
+                aria-label="Id"
+                aria-describedby="addon-wrapping"
+                ref="id"
+                v-model="expenseToEdit.id"
+                disabled
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="date"
+                class="form-control"
+                placeholder="Date"
+                aria-label="Date"
+                aria-describedby="addon-wrapping"
+                ref="date"
+                v-model="expenseToEdit.date"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Description"
+                aria-label="Description"
+                aria-describedby="addon-wrapping"
+                ref="description"
+                v-model="expenseToEdit.description"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Category"
+                aria-label="Category"
+                aria-describedby="addon-wrapping"
+                ref="category"
+                v-model="expenseToEdit.category"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Buyer"
+                aria-label="Buyer"
+                aria-describedby="addon-wrapping"
+                ref="buyer"
+                v-model="expenseToEdit.buyer"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Cost"
+                aria-label="Cost"
+                aria-describedby="addon-wrapping"
+                ref="cost"
+                v-model="expenseToEdit.cost"
+              />
+            </div>
+            <div class="mb-3" v-for="user in expenseToEdit.users">
+              <p class="userParagraph">
+                <input
+                  type="text"
+                  class="form-control usernameInput"
+                  placeholder="Username"
+                  aria-label="Username"
+                  aria-describedby="addon-wrapping"
+                  ref="username"
+                  v-model="user.username"
+                />
+                <input
+                  type="number"
+                  class="form-control amountInput"
+                  placeholder="Amount"
+                  aria-label="Amount"
+                  aria-describedby="addon-wrapping"
+                  ref="amount"
+                  v-model="user.amount"
+                />
+              </p>
+            </div>
+
+            <button type="button" class="btn btn-primary" @click="editExpense">
+              Confirm Edits
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showNewExpenseCard"
+      >
+        <div class="card p-3 bg-light">
+          <form class="card p-3 bg-light">
+            <div class="mb-3">
+              <input
+                type="date"
+                class="form-control"
+                placeholder="Date"
+                aria-label="Date"
+                aria-describedby="addon-wrapping"
+                ref="date"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Description"
+                aria-label="Description"
+                aria-describedby="addon-wrapping"
+                ref="description"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Category"
+                aria-label="Category"
+                aria-describedby="addon-wrapping"
+                ref="category"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Buyer"
+                aria-label="Buyer"
+                aria-describedby="addon-wrapping"
+                ref="buyer"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Cost"
+                aria-label="Cost"
+                aria-describedby="addon-wrapping"
+                ref="cost"
+              />
+            </div>
+            <div class="mb-3">
+              <textarea
+                class="form-control"
+                placeholder="username1,amount1 username2,amount2"
+                id="textArea"
+                ref="usernames"
+                rows="3"
+              ></textarea>
+            </div>
+            <button
+              type="button"
+              class="btn btn-success"
+              @click="createNewExpense"
+            >
+              Create
+            </button>
+          </form>
+          <div class="alert alert-danger" role="alert" v-if="showCostAlert">
+            Total cost is not equal to the sum of the parts!
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showBalance"
+      >
+        <div class="card p-3 bg-light">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Lent Money</th>
+              </tr>
+            </thead>
+            <tr v-for="(item,key, i) in balance">
+              <td>{{key}}</td>
+              <td :class="{redText: item < 0, greenText: item >= 0}">
+                {{item}}
+              </td>
+            </tr>
+          </table>
+          <form class="p-3 bg-light">
+            <div class="form-group row">
+              <input
+                class="dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                type="text"
+                id="inputUsernameToggle"
+                @input="findSuggestedUsernames"
+                v-model="usernameInput"
+              />
+              <div class="dropdown-menu">
+                <a
+                  class="dropdown-item"
+                  v-for="user in suggestedUsernames"
+                  @click="onClickSuggestedUsername(user.username)"
+                  >{{user.username}}</a
+                >
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary btn-filter"
+                @click="findInsights"
+              >
+                Insights
+              </button>
+            </div>
+          </form>
+
+          <table v-if="showInsightsCard" class="table table-bordered">
+            <tr>
+              <th>Lend</th>
+              <th>Borrow</th>
+            </tr>
+            <tr>
+              <td>{{moneyLent}}</td>
+              <td>{{moneyBorrowed}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!--end app-->
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
+
+<!--
+
+ <div
+        class="container min-vh-100 d-flex justify-content-center align-items-center"
+        v-if="showSendMoneyForm"
+      >
+        <div class="card p-3 bg-light">
+          <form class="p-3 bg-light">
+            <div class="input-group flex-nowrap">
+              <input
+                type="text"
+                id="year"
+                name="dateStandard"
+                placeholder="Year"
+                ref="year"
+              />
+              <select
+                class="form-select input-month"
+                id="month"
+                aria-label="Month select"
+                ref="month"
+              >
+                <option selected>Month</option>
+                <option value="1">Jan</option>
+                <option value="2">Feb</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+              <button
+                type="button"
+                class="btn btn-primary btn-filter"
+                @click="filter"
+              >
+                Filter
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-danger"
+                v-if="filteredResults"
+                @click="getExpenses"
+              >
+                Undo
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+-->
+
+<!--<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+      /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+      .row.content {
+        height: 550px;
+      }
+
+      /* Set gray background color and 100% height */
+      .sidenav {
+        background-color: #f1f1f1;
+        height: 100%;
+      }
+
+      /* On small screens, set height to 'auto' for the grid */
+      @media screen and (max-width: 767px) {
+        .row.content {
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-inverse visible-xs">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button
+              type="button"
+              class="navbar-toggle"
+              data-toggle="collapse"
+              data-target="#myNavbar"
+            >
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Balance</a>
+          </div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#summary">Summary</a></li>
+              <li><a href="#expenses">Expenses</a></li>
+              <li><a href="#profile">Profile</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        <div class="row content">
+          <div class="col-sm-3 sidenav hidden-xs">
+            <h2>Logo</h2>
+            <ul class="nav nav-pills nav-stacked">
+              <li class="active"><a href="#summary">Summary</a></li>
+              <li><a href="#expenses">Expenses</a></li>
+              <li><a href="#profile">Profile</a></li>
+            </ul>
+            <br />
+          </div>
+          <br />
+
+          <div class="col-sm-9">
+            <div class="well">
+              <h4>Dashboard</h4>
+              <p>{{username}}</p>
+            </div>
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="well">
+                  <h4>Users</h4>
+                  <p>1 Million</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="well">
+                  <h4>Pages</h4>
+                  <p>100 Million</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="well">
+                  <h4>Sessions</h4>
+                  <p>10 Million</p>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="well">
+                  <h4>Bounce</h4>
+                  <p>30%</p>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="well">
+                  <p>Text</p>
+                  <p>Text</p>
+                  <p>Text</p>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="well">
+                  <p>Text</p>
+                  <p>Text</p>
+                  <p>Text</p>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="well">
+                  <p>Text</p>
+                  <p>Text</p>
+                  <p>Text</p>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-8">
+                <div class="well">
+                  <p>Text</p>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="well">
+                  <p>Text</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+-->
