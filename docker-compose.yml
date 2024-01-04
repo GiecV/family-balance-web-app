@@ -1,6 +1,6 @@
 version: "3"
 services:
-  books:
+  app:
     container_name: vassallo_giacomo_app
     build: .
     command: nodemon --watch . -e js app.js
@@ -9,9 +9,9 @@ services:
     volumes:
       - ./app:/var/www
     links:
-      - "mongo_books:mongohost"
-  mongo_books:
-    container_name: vassallo_giacomo_books
+      - "mongo_app:mongohost"
+  mongo_app:
+    container_name: vassallo_giacomo_mongo
     image: mongo:latest
     volumes:
       - ./data:/data/db

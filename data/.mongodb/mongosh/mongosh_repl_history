@@ -1,6 +1,0 @@
-db.expenses.find({"users.username": "giovanni"})
-db.expenses.find({users.username: "giovanni"})
-    .find({ "users.username": user.username })
-    .collection("expenses")
-const expenses = await db
-use balanceApp
