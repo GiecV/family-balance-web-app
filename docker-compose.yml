@@ -1,19 +1,19 @@
-version: "3"
-services:
-  app:
-    container_name: vassallo_giacomo_app
-    build: .
-    command: nodemon --watch . -e js app.js
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./app:/var/www
-    links:
-      - "mongo_app:mongohost"
-  mongo_app:
-    container_name: vassallo_giacomo_mongo
-    image: mongo:latest
-    volumes:
-      - ./data:/data/db
-    ports:
+version: "3" 
+services: 
+  app: 
+    container_name: vassallo_giacomo_app 
+    build: . 
+    command: nodemon --watch . -e js app.js 
+    ports: 
+      - "3000:3000" 
+    volumes: 
+      - ./app:/var/www 
+    links: 
+      - "mongo_app:mongohost" 
+  mongo_app: 
+    container_name: vassallo_giacomo_mongo 
+    image: mongo:latest 
+    volumes: 
+      - ./data:/data/db 
+    ports: 
       - "27017:27017"
