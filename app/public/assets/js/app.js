@@ -1,7 +1,6 @@
 const app = Vue.createApp({
   data() {
     return {
-      errorFlag: false, //idk
       username: "", //user info in profile tab
       password: "", //
       firstName: "", //
