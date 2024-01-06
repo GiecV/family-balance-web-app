@@ -21,7 +21,9 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
     <!-- Vue.js CDN -->
     <script src="assets/js/app.js" defer></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!--<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> just for debugging-->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
     <title>Board</title>
   </head>
   <body>
@@ -44,9 +46,7 @@
         </div>
       </header>
 
-      <div
-        class="container d-flex justify-content-center align-items-center"
-      >
+      <div class="container d-flex justify-content-center align-items-center">
         <form class="card p-3 bg-light">
           <div class="mb-3">
             <div class="input-group flex-nowrap">
@@ -80,7 +80,6 @@
           </div>
         </form>
       </div>
-
     </div>
     <!--end app-->
 

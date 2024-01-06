@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs/promises");
 const session = require("express-session");
-const {query} = require("express-validator");
+const { query } = require("express-validator");
 const { MongoClient } = require("mongodb");
 const exp = require("constants");
 const uri = "mongodb://mongohost";
@@ -144,17 +144,17 @@ app.use(
 
 function verify(req, res, next) {
   if (req.session.user) {
-//if the user is logged in, then the execution can continue
+    //if the user is logged in, then the execution can continue
     next();
   } else {
-//otherwise the resource is forbidden
+    //otherwise the resource is forbidden
     res.status(403);
   }
 }
 
 app.post("/api/auth/signup", async (req, res) => {
   let new_user = {
-//get values from the body of the request
+    //get values from the body of the request
     username: req.body.username,
     password: req.body.password,
     firstName: req.body.firstName,
@@ -166,20 +166,20 @@ app.post("/api/auth/signup", async (req, res) => {
     .findOne({ username: new_user.username }); //look for an user with the same username
 
   if (userWithTheSameUsername !== null) {
-//if the username is already taken, then return an error
+    //if the username is already taken, then return an error
     res.status(401).json({
       message: "Username already taken",
     });
   } else if (new_user.username == null || new_user.password == null) {
-//if a field is null, then return an error
+    //if a field is null, then return an error
     res.status(401).json({
       message: "Cannot have empty fields",
     });
   } else {
-//else the user is good to signup
+    //else the user is good to signup
     await db.collection("users").insertOne(new_user);
     res.json(new_user);
-      }
+  }
 });
 
 app.post("/api/auth/signin", async (req, res) => {
@@ -191,23 +191,23 @@ app.post("/api/auth/signin", async (req, res) => {
     .findOne({ username: username }); //look for a user with the desired username
 
   if (userRequested == null) {
-//if no user has that username, then return an error
+    //if no user has that username, then return an error
     res.status(401).json({
       message: "Requested user does not exist",
     });
-      } else if (username == null || password == null) {
-//if a field is empty, then return an error
+  } else if (username == null || password == null) {
+    //if a field is empty, then return an error
     res.status(401).json({
       message: "Null username or password are not allowed",
     });
   } else {
     if (userRequested.password === password) {
-//check if the password is correct
+      //check if the password is correct
       req.session.user = userRequested;
       res.status(200);
       res.json(userRequested); //good to go, the session is set
     } else {
-//else return an error
+      //else return an error
       res.status(401).send({
         message: "Wrong credentials",
       });
@@ -216,7 +216,7 @@ app.post("/api/auth/signin", async (req, res) => {
 });
 
 app.get("/api/budget/whoami", verify, (req, res) => {
-if (!req.session || !req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.status(400).send({
       //return an error if a session is not present
       message: "No session!",
@@ -232,60 +232,65 @@ app.get("/api/budget", verify, async (req, res) => {
   const expenses = await db
     .collection("expenses")
     .find({ "users.username": user.username })
-.toArray(); //get all the expenses of a user
+    .toArray(); //get all the expenses of a user
   res.json(expenses);
 });
 
-app.get("/api/budget/search", verify,query('q').notEmpty().escape(), async (req, res) => {
-  const user = req.session.user;
+app.get(
+  "/api/budget/search",
+  verify,
+  query("q").notEmpty().escape(),
+  async (req, res) => {
+    const user = req.session.user;
 
-  const expenses = await db
-    .collection("expenses") //get all the expenses that respect the following criteria:
-    .find({
-      $and: [
-        {
-          $or: [
-            //the user is involved in the expense (borrowed or lent money)
-            {
-              "users.username": user.username,
-            },
-            {
-              buyer: user.username,
-            },
-          ],
-        },
-        {
-          $or: [
-            //at least one of the text fields satisfy the query
-            {
-              description: {
-                $regex: req.query.q,
+    const expenses = await db
+      .collection("expenses") //get all the expenses that respect the following criteria:
+      .find({
+        $and: [
+          {
+            $or: [
+              //the user is involved in the expense (borrowed or lent money)
+              {
+                "users.username": user.username,
               },
-            },
-            {
-              buyer: {
-                $regex: req.query.q,
+              {
+                buyer: user.username,
               },
-            },
-            {
-              category: {
-                $regex: req.query.q,
+            ],
+          },
+          {
+            $or: [
+              //at least one of the text fields satisfy the query
+              {
+                description: {
+                  $regex: req.query.q,
+                },
               },
-            },
-          ],
-        },
-      ],
-    })
-    .toArray();
+              {
+                buyer: {
+                  $regex: req.query.q,
+                },
+              },
+              {
+                category: {
+                  $regex: req.query.q,
+                },
+              },
+            ],
+          },
+        ],
+      })
+      .toArray();
 
-  res.json(expenses);
-});
+    res.json(expenses);
+  }
+);
 
 app.get("/api/budget/:year", verify, async (req, res) => {
   const user = req.session.user;
-const year = Number(req.params.year);
+  const year = Number(req.params.year);
 
-    const expenses = await db
+  const expenses = await db
     .collection("expenses")
     .find({
       "users.username": user.username,
@@ -305,17 +310,17 @@ app.get("/api/budget/:year/:month", verify, async (req, res) => {
   const expenses = await db
     .collection("expenses")
     .find({
-    "users.username": user.username,
-    $expr: {
-      $and: [
-        { $eq: [{ $year: { $toDate: "$date" } }, year] },
-        { $eq: [{ $month: { $toDate: "$date" } }, month] }, //get all the expenses made by the user in the desired month of desired year
+      "users.username": user.username,
+      $expr: {
+        $and: [
+          { $eq: [{ $year: { $toDate: "$date" } }, year] },
+          { $eq: [{ $month: { $toDate: "$date" } }, month] }, //get all the expenses made by the user in the desired month of desired year
         ],
       },
     })
     .toArray();
 
-res.json(expenses);
+  res.json(expenses);
 });
 
 app.get("/api/budget/:year/:month/:id", verify, async (req, res) => {
@@ -429,7 +434,6 @@ app.get("/api/balance", verify, async (req, res) => {
           } else {
             balance[part.username] = Number(part.amount); //if this is the first expense with a user, then set it to the initial value
           }
-
         }
       });
     } else {
@@ -441,9 +445,8 @@ app.get("/api/balance", verify, async (req, res) => {
           if (!(balance[buyer] == undefined)) {
             balance[buyer] = Number(balance[buyer]) - Number(part.amount); //subtract money to the total
           } else {
-            balance[buyer] = - Number(part.amount);
+            balance[buyer] = -Number(part.amount);
           }
-
         }
       });
     }
@@ -507,18 +510,23 @@ app.get("/api/balance/:id", verify, async (req, res) => {
   res.json(balanceWithUser);
 });
 
-app.get("/api/users/search", verify, query('q').notEmpty().escape(), async (req, res) => {
-  console.log(req.query.q);
-  const users = await db
-    .collection("users")
-    .find({ username: { $regex: req.query.q } }) //look for the users that match the query
-    .toArray();
-  users.forEach((user) => {
-    delete user.password;
-  });
+app.get(
+  "/api/users/search",
+  verify,
+  query("q").notEmpty().escape(),
+  async (req, res) => {
+    console.log(req.query.q);
+    const users = await db
+      .collection("users")
+      .find({ username: { $regex: req.query.q } }) //look for the users that match the query
+      .toArray();
+    users.forEach((user) => {
+      delete user.password;
+    });
 
-  res.json(users);
-});
+    res.json(users);
+  }
+);
 
 app.get("/api/auth/logout", async (req, res) => {
   req.session.destroy((err) => {

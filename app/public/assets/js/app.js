@@ -1,6 +1,8 @@
 const app = Vue.createApp({
   data() {
     return {
+      errorFlag: false, //errors while logging in
+      editingError: false, //errors while editing expense
       username: "", //user info in profile tab
       password: "", //
       firstName: "", //
@@ -109,6 +111,7 @@ const app = Vue.createApp({
           this.showInsightsCard = false;
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
+          this.editingError = false;
 
           this.getExpenses();
         }
@@ -121,6 +124,7 @@ const app = Vue.createApp({
           this.showInsightsCard = false;
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
+          this.editingError = false;
         }
       } else if (navbarLabelPressed.classList.contains("budgetNavbarLabel")) {
         if (this.showBalance === false) {
@@ -131,6 +135,7 @@ const app = Vue.createApp({
           this.showInsightsCard = false;
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
+          this.editingError = false;
 
           this.getBalance();
         }
@@ -229,8 +234,10 @@ const app = Vue.createApp({
       const cost = this.$refs.cost.value;
 
       let users = [];
+      let totalAmount = 0;
 
       const paragraphs = document.getElementsByClassName("userParagraph"); //get the paragraphs used for editing the users
+      console.log(paragraphs);
       for (let i = 0; i < paragraphs.length; i++) {
         users.push({
           username:
@@ -239,31 +246,41 @@ const app = Vue.createApp({
         }); //get values in the array of users
       }
 
-      const expense = {
-        //create the edited expense
-        id: id,
-        date: date,
-        description: description,
-        category: category,
-        buyer: buyer,
-        cost: cost,
-        users: users,
-      };
+      users.forEach((user) => {
+        totalAmount += Number(user.amount);
+      });
 
-      await fetch("/api/budget/" + year + "/" + month + "/" + id, {
-        //put the edits
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(expense),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          this.getExpenses();
-          this.showEditCard = false;
-          this.showPayments = true;
-        });
+      console.log(totalAmount + " " + cost);
+      if (totalAmount !== Number(cost)) {
+        this.editingError = true;
+      } else {
+        this.editingError = false;
+        const expense = {
+          //create the edited expense
+          id: id,
+          date: date,
+          description: description,
+          category: category,
+          buyer: buyer,
+          cost: cost,
+          users: users,
+        };
+
+        await fetch("/api/budget/" + year + "/" + month + "/" + id, {
+          //put the edits
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(expense),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            this.getExpenses();
+            this.showEditCard = false;
+            this.showPayments = true;
+          });
+      }
     },
     async deleteExpense(id, date) {
       //delete the correct expense
@@ -401,7 +418,6 @@ const app = Vue.createApp({
           return res.json();
         })
         .then((user) => {
-
           this.username = user.username; //show info in the dashboard
           this.password = user.password;
           this.firstName = user.firstName;
@@ -412,11 +428,11 @@ const app = Vue.createApp({
     }
   },
   computed: {
-    expensesWithShortDate(){
-      return this.expenses.map(item => {
-        return {...item, date: item.date.substring(0,10)};
+    expensesWithShortDate() {
+      return this.expenses.map((item) => {
+        return { ...item, date: item.date.substring(0, 10) };
       });
-    }
+    },
   },
 });
 

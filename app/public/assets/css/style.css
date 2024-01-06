@@ -44,11 +44,24 @@
 }
 
 .btn-addExpense {
-    margin-left: 100px;
+  margin-left: 100px;
 }
 
-table 
-{
-    table-layout:fixed;
-    width:100%;
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+thead tr th {
+  background-color: #0d6efd;
+  color: white;
+}
+
+tr:nth-child(odd) {
+  background-color: #eeeeee;
+}
+
+.bdr {
+  border-radius: 6px;
+  overflow: hidden;
 }
