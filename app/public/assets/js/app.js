@@ -112,6 +112,7 @@ const app = Vue.createApp({
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
           this.editingError = false;
+          this.usernameInput = ""
 
           this.getExpenses();
         }
@@ -125,6 +126,7 @@ const app = Vue.createApp({
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
           this.editingError = false;
+          this.usernameInput = ""
         }
       } else if (navbarLabelPressed.classList.contains("budgetNavbarLabel")) {
         if (this.showBalance === false) {
@@ -136,6 +138,7 @@ const app = Vue.createApp({
           this.showNewExpenseCard = false;
           this.showSendMoneyForm = false;
           this.editingError = false;
+          this.usernameInput = "";
 
           this.getBalance();
         }
@@ -405,6 +408,15 @@ const app = Vue.createApp({
         window.location.replace("index.html"); //go to login page if logout is performed
       });
     },
+    addNewUser(){
+      let inputUser = document.getElementById('inputUserToAdd');
+      let usersArea = document.getElementById('usersArea');
+
+      let username = inputUser.value;
+      usersArea.value += username + ",0 ";
+
+
+    }
   },
   async beforeMount() {
     //when dashboard.html is rendered
